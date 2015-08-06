@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'DB' => $baseDir . '/Tazzy/database/db.php',
+    'File' => $baseDir . '/Tazzy/helpers/File.php',
     'Hash' => $baseDir . '/Tazzy/helpers/hash.php',
     'Mailer' => $baseDir . '/Tazzy/helpers/mail.php',
     'Message' => $baseDir . '/Tazzy/helpers/message.php',
