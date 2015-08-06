@@ -8,18 +8,19 @@
     protected $primary_key;
     protected $validate = [];
     protected $errors =[];
+    protected $hasMany =[];
     private $db;
     private $active_record;
-
+    private $qb;
     function __construct(){
       $this->db = DB::connect();
       $this->active_record = null;
-      $this->primary_key= null;
+      $this->qb = new QueryBuilder();
     }
     function __destruct() {
         $this->active_record = null;
     }
-    public function save($fields,$key=null){
+    public function save($fields,$key=NULL){
       $this->errors = null;
       if(!isset($key)){
         if(!isset($this->validate)){
@@ -101,10 +102,28 @@
     }
     public function find($type = 'all', $conditions=[]){
       $this->errors = null;
+      /*
+      if(isset($this->hasMany)){
+          $conditions['hasMany']= $this->hasMany;
+          //var_dump($conditions['hasMany']);
+      }
+      */
       switch ($type) {
         case 'all':
+        
           if(!$this->db->find($this->table,$conditions)){
-            return $this->db->result();
+              $result = $this->db->result();
+              if(isset($this->hasMany)){
+                  foreach($this->hasMany as $model){
+                      for($i=0;$i<count($result);$i++){
+                          $result[$i]->$model = $this->db->query($this->qb->table($model)->where($this->primary_key,"=",$result[$i]->{$this->primary_key})->get())->result();
+                      }                  
+                 }
+                  return $result;
+              }else{
+                  return $result;
+              }
+            
           }else{
             $this->errors = $this->db->error_info();
             return false;
@@ -112,7 +131,15 @@
           break;
         case 'first':
           if(!$this->db->find($this->table,$conditions)){
-            return $this->db->first();
+            $result = $this->db->first();
+            if(isset($this->hasMany)){
+                  foreach($this->hasMany as $model){
+                    $result->$model = $this->db->query($this->qb->table($model)->where($this->primary_key,"=",$result->{$this->primary_key})->get())->result();                 
+                 }
+                  return $result;
+              }else{
+                  return $result;
+              }
           }else{
             $this->errors = $this->db->error_info();
             return false;
@@ -180,6 +207,17 @@
 
     public function errors(){
       return $this->errors;
+    }
+    private function primaryKey($table){
+        $query = $this->db->query("SHOW KEYS FROM ".$table." WHERE Key_name = 'PRIMARY'")->result();
+        if(!$this->db->error()){
+            return $query[0]->Column_name;
+        }
+        return FALSE;
+    }
+
+    private function tableColumns($table){
+        return $this->db->tableColumns($table);
     }
   }
 
