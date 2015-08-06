@@ -11,7 +11,16 @@
       $this->query = "";
       $this->values =[];
     }
-    public function table($table,$action="")
+    public function fields($table,$fields){
+        $sql ="";
+        foreach ($fields as $val) {
+            $sql.= $table.".". $val.",";
+        }
+        $sql = trim($sql,',');
+        $this->query = "Select ". $sql. " FROM ". $table;
+        return $this;
+    }
+    public function table($table,$action="select")
     {
       $action = strtolower($action);
       switch ($action) {
@@ -128,6 +137,7 @@
     {
       $sql = $this->query;
       $this->query ="";
+     // echo $sql;
       return $sql;
     }
 
