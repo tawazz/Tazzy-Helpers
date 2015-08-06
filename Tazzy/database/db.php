@@ -6,12 +6,12 @@
         $_error=false,
         $error_info,
         $_result,
+        $qb,
         $count=0;
-        private $qb;
         private function __construct(){
-          $this->qb= new QueryBuilder();
+            $this->qb = new QueryBuilder();
             try{
-                $this->_pdo = new PDO('mysql:Host= 127.0.0.1;dbname=database','username','password');
+                $this->_pdo = new PDO('mysql:Host= 127.0.0.1;dbname=mycakedb331','cakeuser331','%^am6a]!ykL*');
             }catch(PDOException $e){
                 die($e->getMessage());
             }
@@ -43,6 +43,7 @@
                       'sql'=> $this->_query,
                       'error' => $this->_query->errorInfo()[2]
                     ];
+                    var_dump($this->error_info);
                     $this->_error = TRUE;
                     return False;
                 }
@@ -68,6 +69,15 @@
             } else{
               $sql .= " * FROM ". $table;
             }
+            //one to many relation ship
+            if(isset($conditions['hasMany'])){
+                $rel = $this->qb->table($table);
+                foreach($conditions['hasMany'] as $model){
+                   $rel->join($model,[$table.".".$this->primaryKey($table),"=",$model.".".$this->primaryKey($table)]);
+                }
+                $sql = $rel->get();
+                
+            }
             //between
             if(isset($conditions["between"])){
                 $this->sql .= " WHERE ".$conditions["where"][0]." BETWEEN ".$conditions["where"][1][0]." AND ". $conditions["where"][1][1];
@@ -82,7 +92,7 @@
                   $operator= $conditions["where"][1];
                   $values[] = $conditions["where"][2];
                   if(in_array($operator,$operators)){
-                      $sql.=" WHERE " .$field." ". $operator." ? " ;
+                      $sql.=" WHERE {$table}." .$field." ". $operator." ? " ;
                       unset($conditions['where']);
                   }
               }else{
@@ -98,7 +108,7 @@
                       $operator= $conditions["where"][1];
                       $values[] = $conditions["where"][2];
                       if(in_array($operator,$operators)){
-                          $sql.=" AND " .$field." ". $operator." ? " ;
+                          $sql.=" AND {$table}." .$field." ". $operator." ? " ;
                           unset($conditions['andWhere']);
                       }
                     }else{
@@ -115,7 +125,7 @@
                       $operator= $conditions["where"][1];
                       $values[] = $conditions["where"][2];
                       if(in_array($operator,$operators)){
-                          $sql.=" OR " .$field." ". $operator." ? " ;
+                          $sql.=" OR {$table}." .$field." ". $operator." ? " ;
                           unset($conditions['orWhere']);
                       }
                     }else{
@@ -136,8 +146,8 @@
 
                 unset($conditions['order']);
               }
-
-            /*var_dump($sql);
+          }
+         /* var_dump($sql);
             echo "<br>";
             var_dump($values);*/
             if(!$this->query($sql,$values)){
@@ -146,7 +156,6 @@
                 return false;
             }
             return FALSE;
-          }
         }
 
         public function action($action,$table,$where= array()){
@@ -213,14 +222,15 @@
             if(count($params)){
                 $keys= array_keys($params);
                 $values= NULL;
+                $V =[];
                 $i=1;
-                $sql = "insert into ".$table."( ";
+                $sql = "insert into ".$table."(";
                 foreach( $keys as $key){
                    $sql = $sql ."$key";
                    if($i<count($params)){
                        $sql.=', ';
                    }
-                   //$values .= "'$params[$key]'";
+                   $V[] = "$params[$key]";
                    $values.='?';
                    if($i<count($params)){
                        $values.=', ';
@@ -229,7 +239,7 @@
                 }
                 $sql = $sql.")VALUES (".$values.")";
                 //echo $sql;
-                if(!$this->query($sql,$params)->error()){
+                if(!$this->query($sql,$V)->error()){
                     return $this;
                 } else {
 		                return false;
@@ -286,6 +296,21 @@
               return $this;
             }
             return false;
+        }
+
+        private function primaryKey($table){
+            $query = $this->query("SHOW KEYS FROM ".$table." WHERE Key_name = 'PRIMARY'")->result();
+            if(!$this->error()){
+              return $query[0]->Column_name;
+            }
+            return FALSE;
+        }
+        public function tableColumns($table){
+            $query = $this->query("SELECT `COLUMN_NAME` AS 'column'
+FROM `INFORMATION_SCHEMA`.`COLUMNS` 
+WHERE `TABLE_SCHEMA`='mycakedb331' 
+    AND `TABLE_NAME`='{$table}';")->result();
+    return $query;
         }
     }
 ?>
