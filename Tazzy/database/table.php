@@ -120,15 +120,17 @@
               $result = $this->db->result();
               if(isset($this->hasMany)){
                   foreach($this->hasMany as $model){
+                      $model = new $model();
                       for($i=0;$i<count($result);$i++){
-                          $result[$i]->$model = $this->db->query($this->qb->table($model)->where($this->primary_key,"=",$result[$i]->{$this->primary_key})->get())->result();
+                          $result[$i]->{$model->table} = $this->db->query($this->qb->table($model->table)->where($this->primary_key,"=",$result[$i]->{$this->primary_key})->get())->result();
                       }
                  }
               }
               if(isset($this->hasOne)){
-                  foreach($this->hasOne as $model => $fk){
+                  foreach($this->hasOne as $model){
+                      $model = new $model();
                       for($i=0;$i<count($result);$i++){
-                          $result[$i]->$model = $this->db->query($this->qb->table($model)->where($fk,"=",$result[$i]->{$fk})->get())->first();
+                          $result[$i]->{$model->table} = $this->db->query($this->qb->table($model->table)->where($model->primary_key,"=",$result[$i]->{$model->primary_key})->get())->first();
                       }
                  }
               }
