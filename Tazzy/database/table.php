@@ -9,6 +9,7 @@
     protected $validate = [];
     protected $errors =[];
     protected $hasMany =[];
+    protected $hasOne =[];
     private $db;
     private $active_record;
     private $qb;
@@ -92,12 +93,16 @@
     }
     public function get($field=[]){
       if(!isset($field)){
-        return $this->db->find($this->table,[
+        return $this->find('first',[
           'where'=>[$this->primary_key,'=',$this->active_record],
           'fields'=>$field
-        ])->first();
+        ]);
       }else{
-        return $this->db->get($this->table,[$this->primary_key,'=',$this->active_record])->first();
+        return $this->find('first',[
+        'where'=>[
+                $this->primary_key,'=',$this->active_record
+            ]
+        ]);
       }
     }
     public function find($type = 'all', $conditions=[]){
@@ -110,20 +115,26 @@
       */
       switch ($type) {
         case 'all':
-        
+
           if(!$this->db->find($this->table,$conditions)){
               $result = $this->db->result();
               if(isset($this->hasMany)){
                   foreach($this->hasMany as $model){
                       for($i=0;$i<count($result);$i++){
                           $result[$i]->$model = $this->db->query($this->qb->table($model)->where($this->primary_key,"=",$result[$i]->{$this->primary_key})->get())->result();
-                      }                  
+                      }
                  }
-                  return $result;
-              }else{
-                  return $result;
               }
-            
+              if(isset($this->hasOne)){
+                  foreach($this->hasOne as $model => $fk){
+                      for($i=0;$i<count($result);$i++){
+                          $result[$i]->$model = $this->db->query($this->qb->table($model)->where($fk,"=",$result[$i]->{$fk})->get())->first();
+                      }
+                 }
+              }
+
+              return $result;
+
           }else{
             $this->errors = $this->db->error_info();
             return false;
@@ -134,12 +145,16 @@
             $result = $this->db->first();
             if(isset($this->hasMany)){
                   foreach($this->hasMany as $model){
-                    $result->$model = $this->db->query($this->qb->table($model)->where($this->primary_key,"=",$result->{$this->primary_key})->get())->result();                 
+                    $result->$model = $this->db->query($this->qb->table($model)->where($this->primary_key,"=",$result->{$this->primary_key})->get())->result();
                  }
-                  return $result;
-              }else{
-                  return $result;
-              }
+            }
+            if(isset($this->hasOne)){
+                foreach($this->hasOne as $model => $fk){
+                    for($i=0;$i<count($result);$i++){
+                        $result->$model = $this->db->query($this->qb->table($model)->where($fk,"=",$result[$i]->{$fk})->get())->first();
+                    }
+                }
+            }
           }else{
             $this->errors = $this->db->error_info();
             return false;
@@ -180,10 +195,10 @@
       $this->db->query("ALTER TABLE ".$this->table." AUTO_INCREMENT = 1");
     }
 
-    public function validate ($source,$rules=[]){
+    public function validate($source,$rules=[]){
       $this->errors = null;
       $validate = new Validate();
-      if(isset($rules)){
+      if(!empty($rules)){
         if($validate->check($source,$rules)->passed()){
           return true;
         }else{
@@ -191,7 +206,7 @@
           return false;
         }
       }else{
-        if(isset($this->validate)){
+        if(!empty($this->validate)){
           if($validate->check($source,$this->validate)->passed()){
             return true;
           }else{
