@@ -52,28 +52,15 @@
       }
     }
     public function read($key){
-      $this->errors = null;
-      if(!isset($this->primary_key)){
-        $query = $this->db->query("SHOW KEYS FROM ".$this->table." WHERE Key_name = 'PRIMARY'")->result();
-        if(!$this->db->error()){
-          $this->primary_key = $query[0]->Column_name;
-          $this->active_record = $key;
-          return TRUE;
-        }
-        $this->errors = $this->db->error_info();
-        return FALSE;
-      }else {
         $this->active_record = $key;
-        return TRUE;
-      }
-      return FALSE;
+        return $this;
     }
     public function set($field,$value = null){
       $this->errors= null;
       if (isset($this->table)&&isset($this->active_record)&&isset($this->primary_key)){
+
         if(is_array($field)){
           if(!$this->db->update($this->table,[$this->primary_key,'=',$this->active_record],$field)->error()){
-            //$this->active_record = null;
             return TRUE;
           }else{
             $this->errors = $this->db->error_info();
@@ -81,7 +68,6 @@
           }
         }else {
           if(!$this->db->update($this->table,[$this->primary_key,'=',$this->active_record],[$field => $value])->error()){
-            //$this->active_record = null;
             return TRUE;
           }else{
             $this->errors = $this->db->error_info();
@@ -107,12 +93,6 @@
     }
     public function find($type = 'all', $conditions=[]){
       $this->errors = null;
-      /*
-      if(isset($this->hasMany)){
-          $conditions['hasMany']= $this->hasMany;
-          //var_dump($conditions['hasMany']);
-      }
-      */
       switch ($type) {
         case 'all':
 
@@ -157,6 +137,7 @@
                     }
                 }
             }
+            return $result;
           }else{
             $this->errors = $this->db->error_info();
             return false;
