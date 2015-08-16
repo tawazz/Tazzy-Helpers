@@ -76,7 +76,7 @@
                    $rel->join($model,[$table.".".$this->primaryKey($table),"=",$model.".".$this->primaryKey($table)]);
                 }
                 $sql = $rel->get();
-                
+
             }
             //between
             if(isset($conditions["between"])){
@@ -192,7 +192,7 @@
             return $this->query('SELECT * from '.$table);
         }
         public function delete($table,$where){
-             return $this->action('DELETE FROM ',$table,$where);
+             return $this->action('DELETE ',$table,$where);
         }
         public function result(){
             return $this->_result;
@@ -307,8 +307,8 @@
         }
         public function tableColumns($table){
             $query = $this->query("SELECT `COLUMN_NAME` AS 'column'
-FROM `INFORMATION_SCHEMA`.`COLUMNS` 
-WHERE `TABLE_SCHEMA`='mycakedb331' 
+FROM `INFORMATION_SCHEMA`.`COLUMNS`
+WHERE `TABLE_SCHEMA`='mycakedb331'
     AND `TABLE_NAME`='{$table}';")->result();
     return $query;
         }
