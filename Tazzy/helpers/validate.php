@@ -10,6 +10,9 @@
         public function check($source,$items=array()){
             foreach($items as $item=>$rules){
                 foreach($rules as $rule=>$rule_value){
+                    if(!array_key_exists($item,$source)){
+                        break;
+                    }
                     $value = $source[$item];
                     if($rule === 'required' && empty($value)){
                         $this->_errors[$item] = "{$item} is required. ";
