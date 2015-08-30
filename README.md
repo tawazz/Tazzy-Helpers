@@ -3,7 +3,7 @@ php helper functions for common tasks ranging from database , file handling, val
 
 # Using Tazzy-Helpers
 
-* To include the in your project:
+* To use Tazzy-Helpers in your project:
     * include "Tazzy-Helpers/autoload.php"; 
     
 * Database accesss:
