@@ -1,8 +1,0 @@
-{
-"autoload": {
-    "classmap": [
-        "Tazzy/database",
-	"Tazzy/helpers"
-    ]
-}
-}
