@@ -2,7 +2,7 @@
     function databaseLoader($class)
     {
         $filename = strtolower($class) . '.php';
-        $file = __DIR__ .'/Tazzy/Database/'.$filename;
+        $file = __DIR__ .'/Tazzy/database/'.$filename;
         if (!file_exists($file))
         {
             return false;
@@ -13,7 +13,7 @@
     function helpersLoader($class)
     {
         $filename = strtolower($class) . '.php';
-        $file = __DIR__ .'/Tazzy/Helpers/'. $filename;
+        $file = __DIR__ .'/Tazzy/helpers/'. $filename;
         if (!file_exists($file))
         {
             return false;
