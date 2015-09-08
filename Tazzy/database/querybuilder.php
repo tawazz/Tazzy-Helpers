@@ -88,27 +88,32 @@
     }
     public function max($table,$col)
     {
-      $this->query = "SELECT MAX(".$col.") as max FROM". $table;
+      $this->query = "SELECT MAX(".$col.") as max FROM ". $table;
       return $this;
     }
     public function min($table,$col)
     {
-      $this->query = "SELECT MIN(".$col.") as min FROM". $table;
+      $this->query = "SELECT MIN(".$col.") as min FROM ". $table;
       return $this;
     }
     public function count($table,$col)
     {
-      $this->query = "SELECT COUNT(".$col.") as count FROM". $table;
+      $this->query = "SELECT COUNT(".$col.") as count FROM ". $table;
       return $this;
     }
     public function avarage($table,$col)
     {
-      $this->query = "SELECT AVG(".$col.") as avg FROM". $table;
+      $this->query = "SELECT AVG(".$col.") as avg FROM ". $table;
+      return $this;
+    }
+    public function sum ($table,$col)
+    {
+      $this->query = "SELECT SUM(".$col.") as sum FROM ". $table;
       return $this;
     }
     public function distinct($table,$col)
     {
-      $this->query = "SELECT DISTINCT ".$col." FROM". $table;
+      $this->query = "SELECT DISTINCT ".$col." FROM ". $table;
       return $this;
     }
     public function groupBy($col)

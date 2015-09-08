@@ -13,7 +13,7 @@
     protected $hasOne =[];
     private $db;
     private $active_record;
-    private $qb;
+    protected $qb;
     function __construct(){
       $this->db = DB::connect();
       $this->active_record = null;
@@ -209,6 +209,7 @@
     public function errors(){
       return $this->errors;
     }
+
     private function primaryKey($table){
         $query = $this->db->query("SHOW KEYS FROM ".$table." WHERE Key_name = 'PRIMARY'")->result();
         if(!$this->db->error()){
@@ -216,7 +217,6 @@
         }
         return FALSE;
     }
-
     private function tableColumns($table){
         return $this->db->tableColumns($table);
     }
