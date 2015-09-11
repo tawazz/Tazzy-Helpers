@@ -11,8 +11,8 @@
     protected $errors =[];
     protected $hasMany =[];
     protected $hasOne =[];
-    private $db;
-    private $active_record;
+    protected $db;
+    protected $active_record;
     protected $qb;
     function __construct(){
       $this->db = DB::connect();

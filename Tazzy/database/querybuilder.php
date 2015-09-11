@@ -49,13 +49,13 @@
     }
     public function where($col,$operator,$value)
     {
-      $this->query .= " WHERE ".$col." ".$operator." ". $value;
+      $this->query .= " WHERE ".$col." ".$operator." '". $value."'";
       return $this;
     }
 
     public function andWhere($col,$operator,$value)
     {
-      $this->query .= " AND ".$col." ".$operator." ". $value;
+      $this->query .= " AND ".$col." ".$operator." '". $value ."'";
       return $this;
     }
 
@@ -66,7 +66,7 @@
     }
     public function whereBtwn($col,$range)
     {
-      $this->query .= " WHERE ".$col." BETWEEN ".$range[0]." AND ". $range[1];
+      $this->query .= " WHERE ".$col." BETWEEN '".$range[0]."' AND '". $range[1]."'";
       return $this;
     }
     public function whereIn($col,$range)
@@ -83,7 +83,7 @@
     }
     public function whereNotIn($col,$range)
     {
-      $this->query .= " WHERE ".$col." BETWEEN ".$range[0]." AND ". $range[1];
+      $this->query .= " WHERE ".$col." BETWEEN '".$range[0]."' AND '". $range[1]."'";
       return $this;
     }
     public function max($table,$col)
