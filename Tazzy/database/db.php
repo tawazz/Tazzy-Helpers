@@ -85,7 +85,6 @@ require_once __DIR__ . '../../../config.php';
                   $values[] = $conditions["where"][2];
                   if(in_array($operator,$operators)){
                       $sql.=" WHERE {$table}." .$field." ". $operator." ? " ;
-                      unset($conditions['where']);
                   }
               }else{
                   unset($conditions['where']);
@@ -94,18 +93,19 @@ require_once __DIR__ . '../../../config.php';
               //and where
               if(isset($conditions["andWhere"])){
                 if(isset($conditions["where"])){
-                  if(count($conditions["where"] === 3)){
-                      $operators = array('=','>','<','>=','<=','!=','like');
-                      $field = $conditions["where"][0];
-                      $operator= $conditions["where"][1];
-                      $values[] = $conditions["where"][2];
-                      if(in_array($operator,$operators)){
-                          $sql.=" AND {$table}." .$field." ". $operator." ? " ;
-                          unset($conditions['andWhere']);
+                  for($i=0;$i < count($conditions["andWhere"]);$i++){
+                    if(count($conditions["andWhere"][$i] === 3)){
+                        $operators = array('=','>','<','>=','<=','!=','like');
+                        $field = $conditions["andWhere"][$i][0];
+                        $operator= $conditions["andWhere"][$i][1];
+                        $values[] = $conditions["andWhere"][$i][2];
+                        if(in_array($operator,$operators)){
+                            $sql.=" AND {$table}." .$field." ". $operator." ? " ;
+                        }
                       }
-                    }else{
-                      unset($conditions['andWhere']);
                     }
+                  }else{
+                    unset($conditions['andWhere']);
                   }
               }
               //or where
@@ -148,7 +148,7 @@ require_once __DIR__ . '../../../config.php';
                 unset($conditions['limit']);
               }
           }
-         /* var_dump($sql);
+          /*var_dump($sql);
             echo "<br>";
             var_dump($values);*/
             if(!$this->query($sql,$values)){
