@@ -11,9 +11,9 @@
     protected $errors =[];
     protected $hasMany =[];
     protected $hasOne =[];
-    private $db;
-    private $active_record;
-    private $qb;
+    protected $db;
+    protected $active_record;
+    protected $qb;
     function __construct(){
       $this->db = DB::connect();
       $this->active_record = null;
@@ -136,7 +136,7 @@
                 foreach($this->hasOne as $model){
                     $model = new $model();
                     for($i=0;$i<count($result);$i++){
-                        $result->{$model->table} = $this->db->query($this->qb->table($model->table)->where($model->primary_key,"=",$result[$i]->{$model->primary_key})->get())->first();
+                        $result->{$model->table} = $this->db->query($this->qb->table($model->table)->where($model->primary_key,"=",$result->{$model->primary_key})->get())->first();
                     }
                 }
             }
@@ -209,6 +209,7 @@
     public function errors(){
       return $this->errors;
     }
+
     private function primaryKey($table){
         $query = $this->db->query("SHOW KEYS FROM ".$table." WHERE Key_name = 'PRIMARY'")->result();
         if(!$this->db->error()){
@@ -216,7 +217,6 @@
         }
         return FALSE;
     }
-
     private function tableColumns($table){
         return $this->db->tableColumns($table);
     }
