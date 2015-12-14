@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '../../../config.php';
     class DB{
         private static $_instance = NULL;
         private $_pdo,
@@ -11,7 +12,7 @@
         private function __construct(){
             $this->qb = new QueryBuilder();
             try{
-                $this->_pdo = new PDO('mysql:Host= 127.0.0.1;dbname=mycakedb331','cakeuser331','%^am6a]!ykL*');
+                $this->_pdo = new PDO(Config::get('mysql.driver').":Host=". Config::get('mysql.host').";dbname=".Config::get('mysql.db'),Config::get('mysql.username'),Config::get('mysql.password'));
             }catch(PDOException $e){
                 die($e->getMessage());
             }
@@ -68,15 +69,6 @@
               $sql .= " FROM ". $table;
             } else{
               $sql .= " * FROM ". $table;
-            }
-            //one to many relation ship
-            if(isset($conditions['hasMany'])){
-                $rel = $this->qb->table($table);
-                foreach($conditions['hasMany'] as $model){
-                   $rel->join($model,[$table.".".$this->primaryKey($table),"=",$model.".".$this->primaryKey($table)]);
-                }
-                $sql = $rel->get();
-
             }
             //between
             if(isset($conditions["between"])){
@@ -145,6 +137,15 @@
                 $sql .= $o;
 
                 unset($conditions['order']);
+              }
+                //limit
+              if(isset($conditions["limit"])){
+                $sql.= " LIMIT ";
+                if(count($conditions['limit']) == 2){
+                    $sql .= $conditions['limit'][0] ." , ".$conditions['limit'][1];
+                }
+
+                unset($conditions['limit']);
               }
           }
           /*var_dump($sql);
