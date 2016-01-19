@@ -45,7 +45,7 @@
                                 }
                                 break;
                             case 'url':
-                                if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i",$website)) {
+                                if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i",$value)) {
                                     $this->_errors[$item]="{$rule_value} not a valid {$item}."; 
                                 }
                                 break;
