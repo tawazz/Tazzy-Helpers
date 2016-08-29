@@ -30,7 +30,7 @@
                                 break;
                             case 'matches':
                                 if($value != $source[$rule_value]){
-                                    $this->_errors[$item]="{$rule_value} must be match  {$item}.";
+                                    $this->_errors[$item]="{$rule_value} must match  {$item}.";
                                 }
                                 break;
                             case 'unique':
@@ -46,12 +46,12 @@
                                 break;
                             case 'url':
                                 if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i",$value)) {
-                                    $this->_errors[$item]="{$rule_value} not a valid {$item}."; 
+                                    $this->_errors[$item]="{$rule_value} not a valid {$item}.";
                                 }
                                 break;
-                            case 'integer'
+                            case 'integer':
                                 if(!is_int($value)){
-                                    $this->_errors[$item]="not a valid {$item}.";    
+                                    $this->_errors[$item]="not a valid {$item}.";
                                 }
                         }
                     }
