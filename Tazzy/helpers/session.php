@@ -24,5 +24,12 @@
                 self::put($name,$string);
             }
         }
+        public static function uploadSessionName(){
+          return ini_get("session.upload_progress.name");
+        }
+
+        public static function uploadSession(){
+          return $_SESSION[uploadSessionName()];
+        }
     }
 ?>
