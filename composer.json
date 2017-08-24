@@ -1,4 +1,21 @@
 {
+  "name": "tazzy/helpers",
+  "type": "library",
+  "description": "Common helpers",
+  "keywords": ["helpers","utils"],
+  "homepage": "https://github.com/tawazz/Tazzy-Helpers",
+  "license": "MIT",
+  "authors": [
+        {
+            "name": "Tawanda Nyakudjga",
+            "email": "tawazz@tawazz.net",
+            "homepage": "http://tawazz.net",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.0"
+    },
   "autoload": {
     "psr-4": {
       "Tazzy\\": "Tazzy"
