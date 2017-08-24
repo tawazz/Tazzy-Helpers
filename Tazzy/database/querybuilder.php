@@ -1,7 +1,6 @@
 <?php
-  /**
-   *
-   */
+namespace Tazzy\Database;
+
   class QueryBuilder
   {
     private $query,$values;

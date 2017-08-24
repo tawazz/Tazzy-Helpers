@@ -1,6 +1,8 @@
 <?php
-require_once __DIR__ . '../../../config.php';
-    class DB{
+namespace Tazzy\Database;
+use Tazzy\Database\Config;
+use Tazzy\Database\QueryBuilder;
+    class DB {
         private static $_instance = NULL;
         private $_pdo,
         $_query,

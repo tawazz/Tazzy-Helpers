@@ -1,4 +1,7 @@
 <?php
+namespace Tazzy\Database;
+use \Tazzy\Database\QueryBuilder;
+use \Tazzy\Database\DB;
   /**
    *
    */

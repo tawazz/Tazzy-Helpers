@@ -1,4 +1,6 @@
 <?php
+namespace Tazzy\Utils;
+use \Tazzy\Utils\Message;
   /**
    *
    */
