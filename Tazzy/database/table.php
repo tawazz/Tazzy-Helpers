@@ -2,6 +2,7 @@
 namespace Tazzy\Database;
 use \Tazzy\Database\QueryBuilder;
 use \Tazzy\Database\DB;
+use \Tazzy\Utils\Validate;
   /**
    *
    */
@@ -218,72 +219,7 @@ use \Tazzy\Database\DB;
       }
       return False;
     }
-    /*
-    private function execHasMany($result){
 
-        foreach($this->hasMany as $model){
-            $model = new $model();
-            for($i=0;$i<count($result);$i++){
-                $modelData = $this->getModelData($result[$i],$model);
-                $model->{$this->primary_key} = $result[$i]->{$this->primary_key};
-                if(isset($model->hasMany)) {
-                    foreach($model->hasMany as $relModel){
-                        $relModel = new $relModel();
-                        $model->{$relModel->table} = $this->getModelData($model,$relModel,'hasMany');
-                        if (isset($relModel->hasOne)) {
-                            foreach($relModel->hasOne as $Model){
-                                $Model = new $Model();
-                                $relModel->{$model->primary_key} = $model->{$this->primary_key};
-                                $relModel->{$Model->table} = $this->getModelData($relModel,$Model,'hasOne');
-                            }
-                        }
-                }
-                $model->$modelData;
-                var_dump($model);
-                $result[$i]->{$model->table} = $model;
-              }
-            }
-        }
-
-        return $result;
-    }
-*/
-    private function execHasMany($result){
-      foreach($this->hasMany as $model){
-          $model = new $model();
-          for($i=0;$i<count($result);$i++){
-              $modelData = $this->getModelData($result[$i],$model);
-              if (isset($model->hasMany)) {
-                foreach($this->hasMany as $relModel){
-                    $relModel = new $relModel();
-                    $model->{$this->primary_key} = $result[$i]->{$this->primary_key};
-                    $model->{$relModel->table} = $this->getModelData($model,$relModel,'hasMany');
-                    //var_dump($model);
-                }
-              }
-              if (isset($model->hasOne)) {
-                foreach($this->hasOne as $relModel){
-                    $relModel = new $relModel();
-                    $model->{$this->primary_key} = $result[$i]->{$this->primary_key};
-                    $model->{$relModel->table} = $this->getModelData($model,$relModel,'hasOne');
-                }
-              }
-              $result[$i]->{$model->table} = $model;
-              //var_dump($result[$i]);
-          }
-
-          return $result;
-      }
-    }
-    private function execHasOne($result){
-      foreach($this->hasOne as $model){
-          $model = new $model();
-          for($i=0;$i<count($result);$i++){
-              $result->{$model->table} = $this->db->query($this->qb->table($model->table)->where($model->primary_key,"=",$result->{$this->primary_key})->get())->first();
-          }
-      }
-     return $result;
-    }
     public function validate($source,$rules=[]){
       $this->errors = null;
       $validate = new Validate();
