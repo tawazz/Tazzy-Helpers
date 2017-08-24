@@ -12,7 +12,7 @@ require_once __DIR__ . '../../../config.php';
         private function __construct(){
             $this->qb = new QueryBuilder();
             try{
-                $this->_pdo = new PDO(Config::get('mysql.driver').":host=". Config::get('mysql.host').";dbname=".Config::get('mysql.db'),Config::get('mysql.username'),Config::get('mysql.password'));
+                $this->_pdo = new PDO(Config::get('db.driver').":host=". Config::get('db.host').";dbname=".Config::get('db.db'),Config::get('db.username'),Config::get('db.password'));
             }catch(PDOException $e){
                 die($e->getMessage());
             }
@@ -44,9 +44,9 @@ require_once __DIR__ . '../../../config.php';
                       'sql'=> $this->_query,
                       'error' => $this->_query->errorInfo()[2]
                     ];
-                    var_dump($this->error_info);
+                    throw new \Exception($this->error_info['error'], 1);
                     $this->_error = TRUE;
-                    return False;
+                    return $this;
                 }
             }
             return $this;
@@ -227,7 +227,7 @@ require_once __DIR__ . '../../../config.php';
                 $i=1;
                 $sql = "insert into ".$table."(";
                 foreach( $keys as $key){
-                   $sql = $sql ."$key";
+                   $sql = $sql ."`$key`";
                    if($i<count($params)){
                        $sql.=', ';
                    }
@@ -238,7 +238,7 @@ require_once __DIR__ . '../../../config.php';
                        $i++;
                    }
                 }
-                $sql = $sql.")VALUES (".$values.")";
+                $sql = $sql.") VALUES (".$values.")";
                 //echo $sql;
                 if(!$this->query($sql,$V)->error()){
                     return $this;
@@ -299,7 +299,7 @@ require_once __DIR__ . '../../../config.php';
             return false;
         }
 
-        private function primaryKey($table){
+        public function primaryKey($table){
             $query = $this->query("SHOW KEYS FROM ".$table." WHERE Key_name = 'PRIMARY'")->result();
             if(!$this->error()){
               return $query[0]->Column_name;
@@ -307,11 +307,11 @@ require_once __DIR__ . '../../../config.php';
             return FALSE;
         }
         public function tableColumns($table){
-            $query = $this->query("SELECT `COLUMN_NAME` AS 'column'
-FROM `INFORMATION_SCHEMA`.`COLUMNS`
-WHERE `TABLE_SCHEMA`='mycakedb331'
-    AND `TABLE_NAME`='{$table}';")->result();
-    return $query;
+          $query = $this->query("SELECT `COLUMN_NAME` AS 'column'
+          FROM `INFORMATION_SCHEMA`.`COLUMNS`
+          WHERE `TABLE_SCHEMA`= ".Config::get('db.db')."
+              AND `TABLE_NAME`='{$table}';")->result();
+          return $query;
         }
     }
 ?>

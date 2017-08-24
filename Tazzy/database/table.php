@@ -1,5 +1,4 @@
 <?php
-
   /**
    *
    */
@@ -18,6 +17,7 @@
       $this->db = DB::connect();
       $this->active_record = null;
       $this->qb = new QueryBuilder();
+      $this->primary_key = $this->primaryKey();
     }
     function __destruct() {
         $this->active_record = null;
@@ -40,7 +40,7 @@
               return $this->db->lastIndex();
             }else{
               $this->errors = $this->db->error_info();
-              return false;
+              throw new \Exception($this->errors);
             }
           }else{
             return false;
@@ -78,16 +78,16 @@
       }
       return FALSE;
     }
-    public function get($field=[]){
+    public function get($id,$field=[]){
       if(!isset($field)){
         return $this->find('first',[
-          'where'=>[$this->primary_key,'=',$this->active_record],
+          'where'=>[$this->primary_key,'=',$id],
           'fields'=>$field
         ]);
       }else{
         return $this->find('first',[
         'where'=>[
-                $this->primary_key,'=',$this->active_record
+                $this->primary_key,'=',$id
             ]
         ]);
       }
@@ -100,18 +100,29 @@
         if(!$this->db->find($this->table,$conditions)){
             $result = $this->db->result();
             if(isset($this->hasMany)){
-                foreach($this->hasMany as $model){
-                    $model = new $model();
+                foreach($this->hasMany as $many){
+                    $model = new $many['class']();
+
                     for($i=0;$i<count($result);$i++){
-                        $result[$i]->{$model->table} = $this->db->query($this->qb->table($model->table)->where($this->primary_key,"=",$result[$i]->{$this->primary_key})->get())->result();
+                        $query = $model->find('all',[
+                          'where' => [$many['id'],"=",$result[$i]->{$this->primary_key}]
+                        ]);
+                        foreach ($query as $value) {
+                          unset($value->{$many['id']});
+                        }
+                        $result[$i]->{$model->table} = $query;
                     }
                }
             }
             if(isset($this->hasOne)){
-                foreach($this->hasOne as $model){
-                    $model = new $model();
+                foreach($this->hasOne as $hasOne){
+                    $model = new $hasOne['class']();
                     for($i=0;$i<count($result);$i++){
-                        $result[$i]->{$model->table} = $this->db->query($this->qb->table($model->table)->where($model->primary_key,"=",$result[$i]->{$this->primary_key})->get())->first();
+                      $query = $model->find('first',[
+                        'where' => [$model->primary_key,"=",$result[$i]->{$hasOne['id']}]
+                      ]);
+                      $result[$i]->{$model->table} = $query;
+                      unset($result[$i]->{$hasOne['id']});
                     }
                }
             }
@@ -126,17 +137,27 @@
           if(!$this->db->find($this->table,$conditions)){
             $result = $this->db->first();
             if(isset($this->hasMany)){
-                  foreach($this->hasMany as $model){
-                    $model = new $model();
-                    $result->{$model->table} = $this->db->query($this->qb->table($model->table)->where($this->primary_key,"=",$result->{$this->primary_key})->get())->result();
-                 }
+              foreach($this->hasMany as $many){
+                $model = new $many['class']();
+                $query = $model->find('all',[
+                  'where' => [$many['id'],"=",$result->{$this->primary_key}]
+                ]);
+                foreach ($query as $value) {
+                  unset($value->{$many['id']});
+                }
+                $result->{$model->table} = $query;
+              }
             }
             if(isset($this->hasOne)){
-                foreach($this->hasOne as $model){
-                    $model = new $model();
-                    for($i=0;$i<count($result);$i++){
-                        $result->{$model->table} = $this->db->query($this->qb->table($model->table)->where($model->primary_key,"=",$result->{$this->primary_key})->get())->first();
-                    }
+                foreach($this->hasOne as $hasOne){
+                  $model = new $hasOne['class']();
+                  for($i=0;$i<count($result);$i++){
+                    $query = $model->find('first',[
+                      'where' => [$model->primary_key,"=",$result->{$hasOne['id']}]
+                    ]);
+                    $result->{$model->table} = $query;
+                    unset($result->{$hasOne['id']});
+                  }
                 }
             }
             return $result;
@@ -289,8 +310,18 @@
       return $this->errors;
     }
 
-    private function primaryKey($table){
-        $query = $this->db->query("SHOW KEYS FROM ".$table." WHERE Key_name = 'PRIMARY'")->result();
+    public function getPossbileEnumValues($name){
+      $type = $this->db->query('SHOW COLUMNS FROM '.$this->table.' WHERE Field = "'.$name.'"')->first()->Type;
+      preg_match('/^enum\((.*)\)$/', $type, $matches);
+      $enum = [];
+      foreach(explode(',', $matches[1]) as $value){
+         $v = trim( $value, "'" );
+         $enum[] = $v;
+      }
+      return $enum;
+    }
+    protected function primaryKey(){
+        $query = $this->db->query("SHOW KEYS FROM ".$this->table." WHERE Key_name = 'PRIMARY'")->result();
         if(!$this->db->error()){
             return $query[0]->Column_name;
         }

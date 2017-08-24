@@ -14,8 +14,7 @@
     public function send($template,$data,$callback){
       $this->errors = null;
       $message = new Message($this->mailer);
-      $this->view->appendData($data);
-      $message->body($this->view->render($template));
+      $message->body($this->view->fetch($template,$data));
 
       call_user_func($callback,$message);
 
@@ -28,6 +27,17 @@
     }
     public function errors(){
       return $this->errors;
+    }
+
+    public function __get($prop)
+    {
+      if($this->{$prop}){
+        return $this->{$prop};
+      }
+      if($this->mailer->{$prop}){
+        return $this->{$prop};
+      }
+      return null;
     }
   }
 
