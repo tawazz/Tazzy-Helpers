@@ -44,7 +44,6 @@ use \Tazzy\Utils\Validate;
               return $this->db->lastIndex();
             }else{
               $this->errors = $this->db->error_info();
-              throw new \Exception($this->errors);
             }
           }else{
             return false;
@@ -260,13 +259,13 @@ use \Tazzy\Utils\Validate;
       return $enum;
     }
     protected function primaryKey(){
-      if($this->table){
+      if ($this->table) {
         $query = $this->db->query("SHOW KEYS FROM ".$this->table." WHERE Key_name = 'PRIMARY'")->result();
         if(!$this->db->error()){
             return $query[0]->Column_name;
         }
       }
-        return FALSE;
+      return FALSE;
     }
     private function tableColumns($table){
         return $this->db->tableColumns($table);
