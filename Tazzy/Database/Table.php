@@ -258,6 +258,12 @@ use \Tazzy\Utils\Validate;
       }
       return $enum;
     }
+
+    public function raw($query)
+    {
+      return $this->db->query($query)->result();
+    }
+    
     protected function primaryKey(){
       if ($this->table) {
         $query = $this->db->query("SHOW KEYS FROM ".$this->table." WHERE Key_name = 'PRIMARY'")->result();
