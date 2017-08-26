@@ -260,10 +260,12 @@ use \Tazzy\Utils\Validate;
       return $enum;
     }
     protected function primaryKey(){
+      if($this->table){
         $query = $this->db->query("SHOW KEYS FROM ".$this->table." WHERE Key_name = 'PRIMARY'")->result();
         if(!$this->db->error()){
             return $query[0]->Column_name;
         }
+      }
         return FALSE;
     }
     private function tableColumns($table){
