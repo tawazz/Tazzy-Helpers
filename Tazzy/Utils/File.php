@@ -8,8 +8,8 @@ class File {
   private $file_tmp;
   private $file_size;
   private $file_error;
-  private $max_size;
-  private $allowed = array('csv','txt');
+  public $max_size;
+  public $allowed = array('csv','txt');
   public function __construct($fileObj){
     $this->file = $fileObj;
     $this->filename = array_key_exists('name', $this->file) ? $this->file['name'] : null;
