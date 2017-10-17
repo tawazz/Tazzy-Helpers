@@ -21,7 +21,7 @@ use \Tazzy\Utils\Validate;
       $this->db = DB::connect();
       $this->active_record = null;
       $this->qb = new QueryBuilder();
-      $this->primary_key = $this->primaryKey();
+      # $this->primary_key = $this->primaryKey(); //  MySQL server has gone away
     }
     function __destruct() {
         $this->active_record = null;
