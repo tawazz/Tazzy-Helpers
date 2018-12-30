@@ -80,7 +80,7 @@ class DB {
       }
       //where clause
       if(isset($conditions["where"])){
-        if(count($conditions["where"] === 3)){
+        if(count($conditions["where"]) === 3){
           $operators = array('=','>','<','>=','<=','!=','like');
           $field = $conditions["where"][0];
           $operator= $conditions["where"][1];
