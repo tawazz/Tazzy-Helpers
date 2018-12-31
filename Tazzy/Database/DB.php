@@ -96,7 +96,7 @@ class DB {
       if(isset($conditions["andWhere"])){
         if(isset($conditions["where"])){
           for($i=0;$i < count($conditions["andWhere"]);$i++){
-            if(count($conditions["andWhere"][$i] === 3)){
+            if(count($conditions["andWhere"][$i]) === 3){
               $operators = array('=','>','<','>=','<=','!=','like');
               $field = $conditions["andWhere"][$i][0];
               $operator= $conditions["andWhere"][$i][1];
@@ -113,7 +113,7 @@ class DB {
       //or where
       if(isset($conditions["orWhere"])){
         if(isset($conditions["where"])){
-          if(count($conditions["where"] === 3)){
+          if(count($conditions["where"]) === 3){
             $operators = array('=','>','<','>=','<=','!=','like');
             $field = $conditions["where"][0];
             $operator= $conditions["where"][1];
